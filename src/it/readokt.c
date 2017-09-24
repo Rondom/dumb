@@ -213,7 +213,7 @@ static IFF_CHUNKED *dumbfile_read_okt(DUMBFILE *f)
 
 	for (;;)
 	{
-		long bytes_read;
+		size_t bytes_read;
 		IFF_CHUNK * chunk = ( IFF_CHUNK * ) realloc( mod->chunks, ( mod->chunk_count + 1 ) * sizeof( IFF_CHUNK ) );
 		if ( !chunk )
 		{
@@ -241,9 +241,9 @@ static IFF_CHUNKED *dumbfile_read_okt(DUMBFILE *f)
 		}
 
 		bytes_read = dumbfile_getnc( ( char * ) chunk->data, chunk->size, f );
-		if ( bytes_read < chunk->size )
+		if ( bytes_read < chunk->size || chunk->size == 0 )
 		{
-			if ( bytes_read <= 0 ) {
+			if ( bytes_read <= 0 || chunk->size == 0 ) {
 				free( chunk->data );
 				break;
 			} else {
