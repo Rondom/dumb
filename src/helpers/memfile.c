@@ -25,8 +25,11 @@
 typedef struct MEMFILE MEMFILE;
 
 struct MEMFILE {
-    const char *ptr, *ptr_begin;
-    size_t left, size;
+    const char *ptr;
+    const char *ptr_begin;
+    size_t left;
+    size_t size;
+
 };
 
 static int dumb_memfile_skip(void *f, dumb_off_t n) {

@@ -112,6 +112,29 @@ DUMBFILE *dumbfile_open_packfile(PACKFILE *p) {
                             &packfile_dfs_leave_open);
 }
 
+DUMBFILE *dumbfile_open_packfile_with_size(PACKFILE *packfile, dumb_off_t size) {
+    //return dumbfile_open_stdfile(fopen("/home/andreas/cvs/dumb/alex4_once_i_was_an_egg.mod", "rb"));
+    // TODO: conversion
+    fprintf(stderr, "Reading from packfile %p with size %ld\n", packfile, size);
+    char* buffer = malloc(size);
+    if (!buffer) {
+        return NULL;
+    }
+
+    fprintf(stderr, "Going to run fread\n");
+    dumb_off_t bytes_read = pack_fread(buffer, size, packfile);
+    fprintf(stderr, "fread has returned %lld\n", bytes_read);
+    if (bytes_read < size) {
+        fprintf(stderr, "Returning null!\n");
+        // either error or EOF (which means filesize is wrong)
+        // error is in errno
+        return NULL;
+    }
+    // TODO: add leak-free dumbfile_open_memory
+    fprintf(stderr, "Returning memview for packfile %p\n", packfile);
+    return dumbfile_open_memory(buffer, size);
+}
+
 DUMBFILE *dumbfile_from_packfile(PACKFILE *p) {
     return p ? dumbfile_open_ex(dumb_packfile_open_ex(p, 0x7fffffff),
                                 &packfile_dfs)

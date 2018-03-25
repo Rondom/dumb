@@ -21,5 +21,6 @@
 #define INTERNAL_ALDUMB_H
 
 void _dat_unload_duh(void *duh);
+DUMBFILE *dumbfile_open_packfile_with_size(PACKFILE *p, dumb_off_t size);
 
 #endif /* INTERNAL_DUMB_H */

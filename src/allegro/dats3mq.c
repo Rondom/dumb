@@ -26,9 +26,7 @@ static void *dat_read_s3m_quick(PACKFILE *f, long size) {
     DUMBFILE *df;
     DUH *duh;
 
-    (void)size;
-
-    df = dumbfile_open_packfile(f);
+    df = dumbfile_open_packfile_with_size(f, size);
 
     if (!df)
         return NULL;
