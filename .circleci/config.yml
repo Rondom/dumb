@@ -1,0 +1,41 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: debian:stretch
+    environment:
+      - CLICOLOR_FORCE: 1
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update
+            apt-get install -y --no-install-recommends  \
+              cmake                  \
+              ninja-build            \
+              gcc                    \
+              libsdl2-dev            \
+              libargtable2-dev       \
+              liballegro4-dev        \
+
+      - run:
+          name: Configure
+          command: |
+            mkdir build && cd build
+            cmake                                          \
+              -DCMAKE_GENERATOR=Ninja                      \
+              -DCMAKE_BUILD_TYPE=RelWithDebInfo            \
+              -DCMAKE_C_FLAGS=-fdiagnostics-color=always   \
+              ..
+
+      - run:
+          name: Build
+          command: |
+            cmake --build ./build
+
+      - run:
+          name: Install
+          command: |
+            DESTDIR=./build/inst cmake --build ./build --target install
+
