@@ -30,7 +30,7 @@ static void *dat_read_mod(PACKFILE *f, long size) {
     if (!df)
         return NULL;
 
-    duh = dumb_read_mod(df, 2);
+    duh = dumb_read_mod(df, DUMB_MOD_RESTRICT_NO_15_SAMPLE);
 
     dumbfile_close(df);
 
