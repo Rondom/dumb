@@ -9,14 +9,15 @@ shared: &shared
     - run:
         name: Install dependencies
         command: |
+          dpkg --add-architecture $TARGET_DEB_ARCH
           apt-get update
           apt-get install -y --no-install-recommends  \
-            cmake                  \
-            ninja-build            \
-            gcc                    \
-            libsdl2-dev            \
-            libargtable2-dev       \
-            liballegro4-dev        \
+            cmake                                     \
+            ninja-build                               \
+            gcc                                       \
+            libsdl2-dev:$TARGET_DEB_ARCH              \
+            libargtable2-dev:$TARGET_DEB_ARCH         \
+            liballegro4-dev:$TARGET_DEB_ARCH          \
 
     - checkout
 
@@ -28,6 +29,7 @@ shared: &shared
             -DCMAKE_GENERATOR=Ninja                      \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo            \
             -DCMAKE_C_FLAGS=-fdiagnostics-color=always   \
+            $CMAKE_ARGS                                  \
             ..
 
     - run:
@@ -38,15 +40,23 @@ shared: &shared
     - run:
         name: Install
         command: |
-          DESTDIR=./build/inst cmake --build ./build --target install    
+          DESTDIR=./build/inst cmake --build ./build --target install
+          find install | xargs file
 
 jobs:
   build-linux-x64:
     <<: *shared
+    environment:
+      <<: *shared_environment
+      TARGET_DEB_ARCH: amd64
+
 
   build-linux-x86:
     <<: *shared
-
+    environment:
+      <<: *shared_environment
+      TARGET_DEB_ARCH: i386
+      CMAKE_ARGS: -DCMAKE_C_FLAGS=-m32 -DCMAKE_LD_FLAGS=-m32
 
 workflows:
   version: 2
