@@ -6,9 +6,6 @@ shared: &shared
   environment:
     - CLICOLOR_FORCE: 1
   steps:
-    - checkout
-    - *install-debian-build-deps
-  steps:
     - run:
         name: Install dependencies
         command: |
@@ -20,6 +17,8 @@ shared: &shared
             libsdl2-dev            \
             libargtable2-dev       \
             liballegro4-dev        \
+
+    - checkout
 
     - run:
         name: Configure
