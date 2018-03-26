@@ -3,7 +3,7 @@ version: 2
 shared: &shared
   docker:
     - image: debian:stretch
-  environment:
+  environment: &shared_environment
     - CLICOLOR_FORCE: 1
   steps:
     - run:
