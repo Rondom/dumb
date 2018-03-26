@@ -371,3 +371,102 @@ int dumbfile_close(DUMBFILE *f) {
 
     return rv;
 }
+/*
+typedef struct dfs_nonseekable_wrapper {
+    DUMBFILE_SYSTEM* wrapped;
+    size_t buffer_size;
+    char* buffer;
+    size_t pos;
+    size_t max_read_pos;
+    void* file;
+} dfs_nonseekable_wrapper;
+
+#define INITIAL_BUFFER_SIZE 4096
+
+static void* make_nonseekable(void* file, DUMBFILE_SYSTEM* dfs) {
+    dfs_nonseekable_wrapper* nonseekable = malloc(sizeof(dfs_nonseekable_wrapper));
+    nonseekable->buffer_size = INITIAL_BUFFER_SIZE;
+    nonseekable->buffer = malloc(nonseekable->buffer_size);
+    nonseekable->pos = 0;
+    nonseekable->max_read_pos = 0;
+    nonseekable->file = file;
+    return nonseekable;
+}
+
+#ifndef SIZE_MAX
+#define SIZE_MAX ((size_t)(-1))
+#endif
+
+static int resize_buffer(dfs_nonseekable_wrapper* file, off_t new_pos) {
+    // TODO: find good factor for exponential increase
+    if (new_pos > file->buffer_size) {
+        off_t new_size = file->buffer_size;
+        while (new_pos > new_size) {
+            new_size *= 2;
+        }
+        if (new_size > SIZE_MAX) {
+            return -1;
+        }
+        void* buffer = realloc(file->buffer, new_size);
+        if (!buffer) {
+            return -1;
+        }
+        file->buffer = buffer;
+        file->buffer_size = new_size;
+    }
+};
+
+static int nonseekable_getc(void *f) {
+    dfs_nonseekable_wrapper* file = (dfs_nonseekable_wrapper*) f;
+    size_t new_pos = file->pos + 1;
+    if (new_pos < file->max_read_pos) {
+        int res = dumbfile_getc(file->file);
+        if (res < 0) {
+            return res;
+        }
+        if (resize_buffer(file, new_pos) < 0) {
+            return -1;
+        }
+        file->buffer[new_pos] = res;
+    }
+
+    return file->buffer[new_pos];
+}
+
+static int nonseekable_seek(void *f) {
+    dfs_nonseekable_wrapper* file = (dfs_nonseekable_wrapper*) f;
+    size_t new_pos = file->pos + 1;
+    if (new_pos < file->max_read_pos) {
+        if (resize_buffer(file, new_pos) < 0) {
+            return -1;
+        }
+        int res = file->wrapped->getc(file->file);
+        if (res < 0) {
+            return res;
+        }
+        file->buffer[new_pos] = res;
+    }
+
+    return file->buffer[new_pos];
+}
+
+
+static void nonseekable_close(void *f) {
+    dfs_nonseekable_wrapper* file = (dfs_nonseekable_wrapper*) f;
+    free(file->buffer);
+    file->buffer = NULL;
+    file->buffer_size = 0;
+    file->max_read_pos = 0;
+    return file->wrapped->close(file->file);
+}
+
+
+static DUMBFILE_SYSTEM dumbfilesystem_nonseekable_wrapper_ = {&dumb_packfile_open,
+                                                  NULL, // skip
+                                                  &nonseekable_getc,
+                                                  NULL, // getnc
+                                                  &nonseekable_close,
+                                                  &dumb_packfile_seek,
+                                                  &dumb_packfile_get_size};
+
+*/
