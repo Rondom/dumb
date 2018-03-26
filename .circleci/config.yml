@@ -1,7 +1,14 @@
 version: 2
 
-reusable-steps:
-  install-debian-build-deps: &install-debian-build-deps
+shared: &shared
+  docker:
+    - image: debian:stretch
+  environment:
+    - CLICOLOR_FORCE: 1
+  steps:
+    - checkout
+    - *install-debian-build-deps
+  steps:
     - run:
         name: Install dependencies
         command: |
@@ -14,7 +21,6 @@ reusable-steps:
             libargtable2-dev       \
             liballegro4-dev        \
 
-  configure-build-install:
     - run:
         name: Configure
         command: |
@@ -37,23 +43,10 @@ reusable-steps:
 
 jobs:
   build-linux-x64:
-    docker:
-      - image: debian:stretch
-    environment:
-      - CLICOLOR_FORCE: 1
-    steps:
-      - checkout
-      - *install-debian-build-deps
+    <<: *shared
 
   build-linux-x86:
-    docker:
-      - image: debian:stretch
-    environment:
-      - CLICOLOR_FORCE: 1
-    steps:
-      - checkout
-      - *install-debian-build-deps
-
+    <<: *shared
 
 
 workflows:
