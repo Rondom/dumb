@@ -154,7 +154,7 @@ SET(SOURCES
     src/it/readany2.c
     src/helpers/resampler.c
     src/helpers/lpc.c
-)
+        src/core/dumbfile_nonseekable.c src/core/dumbfile_nonseekable.h)
 
 set(INSTALL_HEADERS
     include/dumb.h
